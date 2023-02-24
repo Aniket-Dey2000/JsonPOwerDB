@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html lang="en">
   <head>
-    <title>Bootstrap Example</title>
+    <title>Micro Project Work</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
@@ -19,89 +19,225 @@ and open the template in the editor.
   </head>
   <body>
     <div class="container">
-      <h2>Vertical (basic) form</h2>
-      <form id="empForm" method="post">
+      <h2>Student Enrollment Form (Micro Project Work)</h2>
+      <form id="stuForm" method="post">
         <div class="form-group">
           <span
-            ><label for="empId">Employee ID:</label>
-            <label id="empIdMsg"> </label
+            ><label for="stuId">Roll-No:</label> <label id="stuIdMsg"> </label
           ></span>
 
           <input
             type="text"
             class="form-control"
-            name="empId"
-            id="empId"
-            placeholder="Enter Employee ID"
+            onchange="getStu()"
+            name="stuId"
+            id="stuId"
+            placeholder="Enter Roll-No"
             required
           />
         </div>
+
         <div class="form-group">
-          <label for="empName">Employee Name:</label>
+          <label for="stuName">Student Full Name:</label>
           <input
             type="text"
             class="form-control"
-            id="empName"
-            placeholder="Enter Employee Name"
-            name="empName"
+            id="stuName"
+            placeholder="Enter Full Name"
+            name="stuName"
           />
         </div>
+
         <div class="form-group">
-          <label for="empEmail">Email:</label>
+          <label for="stuClass">Class:</label>
           <input
-            type="email"
+            type="text"
             class="form-control"
-            id="empEmail"
-            placeholder="Enter Employee Email"
-            name="empEmail"
+            id="stuClass"
+            placeholder="Enter Class"
+            name="stuClass"
           />
         </div>
+
+        <div class="form-group">
+          <label for="stuDOB">Birth-Date:</label>
+          <input
+            type="date"
+            class="form-control"
+            id="stuDOB"
+            placeholder="Enter Birth-Date"
+            name="stuDOB"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="stuAddress">Address:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="stuAddress"
+            placeholder="Enter Address"
+            name="stuAddress"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="stuEnrollDate">Enrollment-Date:</label>
+          <input
+            type="date"
+            class="form-control"
+            id="stuEnrollDate"
+            placeholder="Enter Enrollment-Date"
+            name="stuEnrollDate"
+          />
+        </div>
+
         <input
           type="button"
           class="btn btn-primary"
           id="empSave"
           value="Save"
-          onclick="saveEmployee();"
+          onclick="saveData();"
         />
+        <input
+          type="button"
+          class="btn btn-primary"
+          id="empChange"
+          value="Change"
+          onclick="changeData();"
+        />
+        <input
+          type="button"
+          class="btn btn-primary"
+          id="empReset"
+          value="Reset"
+          onClick="resetForm()"
+        />
+        <!-- window.location.reload() -->
       </form>
     </div>
 
     <script>
       function validateAndGetFormData() {
-        var empIdVar = $("#empId").val();
-        if (empIdVar === "") {
-          alert("Employee ID Required Value");
-          $("#empId").focus();
+        var stuIdVar = $("#stuId").val();
+        if (stuIdVar === "") {
+          alert("Student Roll-No Required Value");
+          $("#stuId").focus();
           return "";
         }
-        var empNameVar = $("#empName").val();
-        if (empNameVar === "") {
-          alert("Employee Name is Required Value");
-          $("#empName").focus();
+        var stuNameVar = $("#stuName").val();
+        if (stuNameVar === "") {
+          alert("Student Name is Required Value");
+          $("#stuName").focus();
           return "";
         }
-        var empEmailVar = $("#empEmail").val();
-        if (empEmailVar === "") {
-          alert("Employee Email is Required Value");
-          $("#empEmail").focus();
+        var stuClassVar = $("#stuClass").val();
+        if (stuClassVar === "") {
+          alert("Student Class is Required Value");
+          $("#stuClass").focus();
           return "";
         }
+
+        var stuDOBVar = $("#stuDOB").val();
+        if (stuDOBVar === "") {
+          alert("Student Birth-Date is Required Value");
+          $("stuDOB").focus();
+          return "";
+        }
+
+        var stuAddressVar = $("#stuAddress").val();
+        if (stuAddressVar === "") {
+          alert("Student Address is Required Value");
+          $("#stuAddress").focus();
+          return "";
+        }
+
+        var stuEnrollDateVar = $("stuEnrollDate").val();
+        if (stuEnrollDateVar === "") {
+          alert("Student Enrollment-Date is Required Value");
+          $("stuEnrollDate").focus();
+          return "";
+        }
+
         var jsonStrObj = {
-          empId: empIdVar,
-          empName: empNameVar,
-          empEmail: empEmailVar,
+          stuId: stuIdVar,
+          stuName: stuNameVar,
+          stuClass: stuClassVar,
+          stuDOB: stuDOBVar,
+          stuAddress: stuAddressVar,
+          stuEnrollDate: stuEnrollDateVar,
         };
         return JSON.stringify(jsonStrObj);
       }
 
-      function resetForm() {
-        $("#empId").val("");
-        $("#empName").val("");
-        $("#empEmail").val("");
-        $("#empId").focus();
+      function getstuIdASJsonObj() {
+        var stuid = $("#stuid").val();
+        var jsonStr = {
+          id: stuid,
+        };
+        return JSON.stringify(jsonStr);
       }
 
-      function saveEmployee() {
+      function getStu() {
+        var stuIdJsonObj = getstuIdASJsonObj();
+        var getRequest = createGET_BY_KEYRequest(
+          connToken,
+          stuDBName,
+          stuRelationName,
+          stuIdJsonObj
+        );
+        jQuery.ajaxSetup({ async: false });
+        var resJsonObj = executeCommandAtGivenBaseUrl(
+          getRequest,
+          jpdbBaseURL,
+          jpdbURL
+        );
+        jQuery.ajaxSetup({ async: true });
+        if (resJsonObj.status === 400) {
+          $("#save").prop("disabled", flase);
+          $("#reset").prop("disabled", false);
+          $("#stuname").focus();
+        } else if (resJsonObj.status === 200) {
+          $("#stuid").prop("disabled", true);
+          fillData(resJsonObj);
+          $("#change").prop("disabled", false);
+          $("#reset").prop("disabled", false);
+          $("#stuname").focus();
+        }
+      }
+
+      function resetForm() {
+        $("#stuId").val("");
+        $("#stuName").val("");
+        $("#stuClass").val("");
+        $("#stuDOB").val("");
+        $("#stuAddress").val("");
+        $("#stuEnrollDate").val("");
+        $("#stuId").focus();
+      }
+
+      function changeData() {
+        $("#change").prop("disabled", true);
+        jsonChg = validateData();
+        var updateRequest = createUPDATERecordRequest(
+          ConnToken,
+          jsonChg,
+          stuDBName,
+          stuRelationName,
+          localStorage.getItem("recno")
+        );
+        jQuery.ajaxSetup({ async: falses });
+        var resJsonObj = executeCommandAtGivenBaseUrl(
+          updateRequest.jpdBaseURL,
+          jpdbIML
+        );
+        jQuery.ajaxSetup({ async: true });
+        console.log(resJsonObj);
+        resetForm();
+        $("#stuID").focus();
+      }
+
+      function saveData() {
         // validate form data
 
         // create JPDB request string - token , dbname , relation name ...
@@ -117,8 +253,8 @@ and open the template in the editor.
         var putReqStr = createPUTRequest(
           "90932512|-31949274757731994|90949158",
           jsonStr,
-          "SAMPLE",
-          "EMP-REL"
+          "SCHOOL-DB",
+          "STUDENT-TABLE"
         );
 
         alert(putReqStr);
