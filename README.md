@@ -2,9 +2,6 @@ Micro Project Work
 
 LINK - https://aniket-dey2000.github.io/JsonPOwerDB.github.io/
 
-Contact no - +91 8582887792
-email : aniketdeytiu@gmail.com
-
 Title of the Project : Student Enrollment Form 
 
 Description : Student Enrollment Form that will store data in STUDENT-TABLE relation of SCHOOL-DB database.
